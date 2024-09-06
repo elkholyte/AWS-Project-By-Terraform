@@ -1,0 +1,35 @@
+resource "aws_instance" "web-public" {
+  ami           = "ami-07cc1bbe145f35b58"
+  instance_type = "t2.micro"
+  depends_on = [ aws_vpc.myvpc ]
+  subnet_id = aws_subnet.public-1a.id
+  key_name = "web-public"
+  tags = {
+    Name = "web-public"
+  }
+  vpc_security_group_ids = [aws_security_group.rdp-http-https-ssh.id]
+}
+
+resource "aws_instance" "linux-private" {
+  ami           = "ami-066784287e358dad1"
+  instance_type = "t2.micro"
+  depends_on = [ aws_vpc.myvpc ]
+  subnet_id = aws_subnet.private-1b.id
+  key_name = "bastion-host"
+  tags = {
+    Name = "linux-private"
+  }
+  vpc_security_group_ids = [aws_security_group.private.id]
+}
+
+resource "aws_instance" "bastion-host" {
+  ami           = "ami-066784287e358dad1"
+  instance_type = "t2.micro"
+  depends_on = [ aws_vpc.myvpc ]
+  subnet_id = aws_subnet.public-1a.id
+  key_name = "bastion-host"
+  tags = {
+    Name = "bastion-host"
+  }
+  vpc_security_group_ids = [aws_security_group.bastionhost.id]
+}
